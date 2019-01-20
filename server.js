@@ -1,3 +1,6 @@
+var Redis = require('ioredis')
+var redis = new Redis(6379, 'todo-redis')
+
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const app = require('express')()
@@ -14,7 +17,26 @@ app.use(session({
   cookie: { maxAge: 60000 }
 }))
 
-app.put('/api/todos', function (req, res) {
+app.get('/api/todos', async function (req, res) {
+  let todos = []
+  let count = await redis.llen('todos')
+  if (count > 0) {
+    todos = await redis.lrange('todos', 0, -1)
+    todos = todos.map(JSON.parse)
+  }
+
+  req.session.todos = todos
+  res.json(todos)
+})
+
+app.put('/api/todos', async function (req, res) {
+  let count = await redis.llen('todos')
+  if (count > 0) {
+    await redis.del('todos')
+  }
+
+  await redis.rpush('todos', ...(req.body.todos.map(JSON.stringify)))
+
   req.session.todos = req.body.todos
   res.json(req.session.todos)
 })
