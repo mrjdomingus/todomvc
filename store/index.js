@@ -53,8 +53,9 @@ const store = () => new Vuex.Store({
     saveTodos ({ state }) {
       axios.put('/api/todos', { todos: state.todos })
     },
-    nuxtServerInit ({ commit }, { req }) {
-      commit('SET_TODOS', req.session ? (req.session.todos || []) : [])
+    async nuxtServerInit ({ commit }, { req }) {
+      let res = await axios.get('http://localhost:3000/api/todos')
+      commit('SET_TODOS', (res.data || []))
     }
   }
 })
