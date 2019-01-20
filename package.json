@@ -9,6 +9,7 @@
     "body-parser": "^1.16.0",
     "express": "^4.14.0",
     "express-session": "^1.15.0",
+    "ioredis": "^4.5.1",
     "nuxt": "latest",
     "todomvc-app-css": "^2.0.6"
   },
